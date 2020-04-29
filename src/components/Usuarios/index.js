@@ -1,5 +1,9 @@
 import React, {Component} from 'react'
-import axios from 'axios' //permite usar todos los métodos http de web post put etc
+import { connect } from 'react-redux' //se usa para conectar con los reducers
+import * as usuariosActions from '../../actions/usuariosActions'
+import Spinner from '../General/Spinner'
+import Fatal from '../General/Fatal'
+import Tabla from './Tabla'
 
 /* stateLess o componentes funcionales, cuando comienza una función con la palabra reservada 'const' */
 /* statFull o clases NO funcionales (o componente clase) no manejan estados, solo manean información o funciones */
@@ -7,61 +11,34 @@ import axios from 'axios' //permite usar todos los métodos http de web post put
 //const Usuarios = () => { //componente funcional o stateLess
  class Usuarios extends Component{ //componente no funcional
 
-  constructor(){
-   super()
-   this.state = {
-     usuarios : [],
-   } 
+  componentDidMount(){
+    this.props.traerTodos()
   }
 
-  async componentDidMount(){
-    const respuesta = await axios.get('https://jsonplaceholder.typicode.com/users')
-    this.setState({
-      usuarios: respuesta.data
-    })
-  }
+  ponerContenido = () => {
+      if (this.props.cargando){
+          return <Spinner />
+      }
 
-  //const ponerFilas = () => [ //stateLess
-  ponerFilas = () => ( //stateFull
-    this.state.usuarios.map((usuario) =>(
-      <tr key={usuario.id}>
-        <td>
-          {usuario.name}
-        </td>
-        <td>
-          {usuario.email}
-        </td>
-        <td>
-          {usuario.website}
-        </td>
-      </tr>
-    ))
-  )
+      if (this.props.error){
+          return <Fatal mensaje={this.props.error}/>
+      }
+
+    return <Tabla usuarios={this.props.usuarios}/>
+  }
 
   render(){ //en un componente clase se debe poner render, en un stateLess no se necesita
     return (
         <React.Fragment>
-        <table className="tabla">
-          <thead>
-            <tr>
-              <th>
-                Nombre
-              </th>
-              <th>
-                Correo
-              </th>
-              <th>
-                Enlace
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            { this.ponerFilas()  /*en un componente clase se debe poner this, en un stateLess no se necesita */}
-          </tbody>
-        </table> 
-      </React.Fragment>
+            <h1>Usuarios</h1>
+            {this.ponerContenido()}
+        </React.Fragment>
     )
   }
 }
 
-export default Usuarios
+const mapStateToProps = (reducers) => {
+    return reducers.usuariosReducer
+}
+
+export default connect(mapStateToProps, usuariosActions)(Usuarios)
