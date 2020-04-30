@@ -27,6 +27,6 @@ export default (state = INITIAL_STATE, action) => {
                 cargando: false
             }
 
-            default: return state
+        default: return state
     }
 }

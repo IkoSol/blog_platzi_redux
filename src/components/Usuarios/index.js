@@ -12,7 +12,9 @@ import Tabla from './Tabla'
  class Usuarios extends Component{ //componente no funcional
 
   componentDidMount(){
-    this.props.traerTodos()
+    if (!this.props.usuarios.length){
+      this.props.traerTodos()
+    }
   }
 
   ponerContenido = () => {
